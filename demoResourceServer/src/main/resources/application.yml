@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/auth_db
+    username: root
+    password: 111
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: false
+    open-in-view: false
+    database: mysql
+  security:
+    filter:
+      oauth2:
+        resourceserver:
+          jwt:
+            issuer-uri: http://localhost:9000
+server:
+  port: 8888
+  error:
+    include-message: always
+    include-binding-errors: always
