@@ -1,6 +1,7 @@
 package com.auth.demo.authserver;
 
 import com.auth.demo.authserver.data.RefreshRequest;
+import com.auth.demo.authserver.data.UserModel;
 import com.auth.demo.authserver.data.UserService;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -26,12 +28,14 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtEncoder jwtEncoder;
     private final UserService userService;
+    final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, JwtEncoder jwtEncoder, UserService userService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtEncoder jwtEncoder, UserService userService, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtEncoder = jwtEncoder;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
     
     @GetMapping("/hello")
@@ -40,7 +44,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
@@ -57,9 +61,15 @@ public class AuthController {
 
         return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken, 3600));
     }
+    
+    @PostMapping("/register")
+    public ResponseEntity<UserModel> register(@RequestBody UserModel user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return ResponseEntity.ok(userService.saveUser(user));
+    }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshRequest refreshRequest) {
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshRequest refreshRequest) {
         val user = userService.findByRefreshToken(refreshRequest.getRefreshToken());
 
         String newAccessToken = generateToken(user.getUsername(), 1);

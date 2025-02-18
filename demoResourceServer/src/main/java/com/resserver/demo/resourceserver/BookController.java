@@ -1,5 +1,7 @@
 package com.resserver.demo.resourceserver;
 
+import com.resserver.demo.resourceserver.data.model.BookModel;
+import com.resserver.demo.resourceserver.data.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

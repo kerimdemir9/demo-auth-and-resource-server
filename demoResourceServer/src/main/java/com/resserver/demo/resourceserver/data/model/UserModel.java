@@ -1,7 +1,10 @@
-package com.resserver.demo.resourceserver;
+package com.resserver.demo.resourceserver.data.model;
 
+import com.resserver.demo.resourceserver.RoleListConverter;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -25,6 +28,8 @@ public class UserModel {
 
     @Column(name = "refresh_token", columnDefinition = "TEXT")
     private String refreshToken;
+    
+    private Date created;
 
     @Column(columnDefinition = "json")
     @Convert(converter = RoleListConverter.class)

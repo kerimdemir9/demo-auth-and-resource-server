@@ -1,5 +1,6 @@
-package com.resserver.demo.resourceserver;
+package com.resserver.demo.resourceserver.data.repository;
 
+import com.resserver.demo.resourceserver.data.model.BookModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

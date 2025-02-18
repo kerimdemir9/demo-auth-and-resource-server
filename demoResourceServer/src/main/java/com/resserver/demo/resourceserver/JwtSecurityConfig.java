@@ -1,9 +1,11 @@
 package com.resserver.demo.resourceserver;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -18,6 +20,7 @@ public class JwtSecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/hello").permitAll()
+                        .requestMatchers("/chat/**").permitAll()
                         .requestMatchers("/hello-auth").hasRole("USER") // ✅ Requires ROLE_USER
                         .requestMatchers("/hello-admin").hasRole("ADMIN") // ✅ Requires ROLE_ADMIN
                         .anyRequest().authenticated()
@@ -26,7 +29,8 @@ public class JwtSecurityConfig {
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()) // ✅ Ensures roles are extracted correctly
                         )
-                );
+                )
+                .csrf(csrf->csrf.disable());
 
         return http.build();
     }
@@ -43,6 +47,11 @@ public class JwtSecurityConfig {
         return authenticationConverter;
     }
 
+    @PostConstruct
+    public void enableSecurityContextForWebSockets() {
+        // ✅ Allows SecurityContextHolder to be used in WebSocket threads
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
     
     @Bean
     public JwtDecoder jwtDecoder() {

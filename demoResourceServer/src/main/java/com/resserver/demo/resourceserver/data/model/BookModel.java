@@ -1,4 +1,4 @@
-package com.resserver.demo.resourceserver;
+package com.resserver.demo.resourceserver.data.model;
 
 import jakarta.persistence.*;
 import lombok.*;

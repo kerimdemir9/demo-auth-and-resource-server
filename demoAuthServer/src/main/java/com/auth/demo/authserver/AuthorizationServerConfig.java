@@ -51,6 +51,7 @@ public class AuthorizationServerConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login").permitAll()  // Allow login requests without authentication
+                        .requestMatchers("/api/register").permitAll()  // Allow login requests without authentication
                         .anyRequest().authenticated())  // Require JWT token for all other requests
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt) // Enforce JWT authentication
                 .csrf(csrf -> csrf.disable());  // Disable CSRF for APIs
